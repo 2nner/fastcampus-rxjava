@@ -3,6 +3,7 @@ package com.maryang.fastrxjava.util
 import android.util.Log
 import com.maryang.fastrxjava.base.BaseApplication.Companion.TAG
 import io.reactivex.Observable
+import io.reactivex.observers.DisposableObserver
 import io.reactivex.subjects.AsyncSubject
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -10,6 +11,33 @@ import io.reactivex.subjects.ReplaySubject
 
 
 object HotObservable {
+
+    fun example() {
+        // Cold Ovservable
+        Observable.just(true)
+            .subscribe(object: DisposableObserver<Boolean>() {
+                override fun onComplete() {
+
+                }
+
+                override fun onNext(t: Boolean) {
+
+                }
+
+                override fun onError(e: Throwable) {
+
+                }
+            })
+
+        // Hot Observable
+        // subject는 내부에 list<observer>가 있다
+        // subscribe를 하면 list.add(observer)
+        // onNExt를 하면 list.foreach{ observer.onNext() }
+        val subject = PublishSubject.create<Int>()
+        subject.subscribe() // 이벤트트 시작 여부와 관련이없다
+        subject.onNext(1)
+    }
+
     fun logConnectableObservable() {
         var count = 0
         val observable = Observable
@@ -24,6 +52,8 @@ object HotObservable {
             }
             .doOnNext { value -> count++ }
             .publish()
+            //.refCount() -> 일반적인 Observable로 동작하게끔 해줌
+            //.replay() 등 여러 함수가 있음
 
         observable.subscribe { value ->
             try {
