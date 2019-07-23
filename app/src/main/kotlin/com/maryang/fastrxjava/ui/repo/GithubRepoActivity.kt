@@ -9,6 +9,7 @@ import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.event.DataObserver
 import com.maryang.fastrxjava.ui.user.UserActivity
 import io.reactivex.observers.DisposableCompletableObserver
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_github_repo.*
 import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.intentFor
@@ -59,8 +60,16 @@ class GithubRepoActivity : BaseActivity() {
         showStar(repo.star)
     }
 
+    val starOnClickListener = PublishSubject.create<Unit>()
+
     private fun setOnClickListener() {
-        star.onClick { clickStar() }
+        star.onClick {
+            starOnClickListener.onNext(Unit)
+        }
+
+        starOnClickListener.subscribe {
+            clickStar()
+        }
         ownerImage.onClick { clickOwner() }
         ownerName.onClick { clickOwner() }
     }

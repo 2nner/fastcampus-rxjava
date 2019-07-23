@@ -8,11 +8,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.maryang.fastrxjava.base.BaseActivity
 import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.event.DataObserver
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_github_repos.*
 
 
 class GithubReposActivity : BaseActivity() {
+
+    private var cd = CompositeDisposable()
 
     private val viewModel: GithubReposViewModel by lazy {
         GithubReposViewModel()
@@ -68,7 +72,7 @@ class GithubReposActivity : BaseActivity() {
     }
 
     private fun subscribeDataObserver() {
-        DataObserver.observe()
+        cd += DataObserver.observe()
             .filter { it is GithubRepo }
             .subscribe { repo ->
                 adapter.items.find {
@@ -87,5 +91,9 @@ class GithubReposActivity : BaseActivity() {
     private fun hideLoading() {
         loading.visibility = View.GONE
         refreshLayout.isRefreshing = false
+    }
+
+    override fun onPause() {
+        super.onPause()
     }
 }
