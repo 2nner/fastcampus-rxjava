@@ -32,4 +32,14 @@ class GithubRepository {
     fun unstar(owner: String, repo: String): Completable =
         api.unstar(owner, repo)
             .subscribeOn(Schedulers.io())
+
+    fun searchOtherRepos(username: String): Single<List<GithubRepo>> =
+        api.searchOtherRepos(username)
+            .map {
+                it.asJsonArray
+                    .map { repo ->
+                        ApiManager.gson.fromJson(repo, GithubRepo::class.java)
+                    }
+            }
+            .subscribeOn(Schedulers.io())
 }

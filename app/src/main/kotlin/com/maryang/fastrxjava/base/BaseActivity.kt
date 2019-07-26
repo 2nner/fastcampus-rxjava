@@ -12,6 +12,7 @@ abstract class BaseActivity : AppCompatActivity() {
         compositeDisposable.dispose()
     }
 
+    // ActionBar에 BackButton 보이게 하기
     override fun onSupportNavigateUp(): Boolean {
         if (!super.onSupportNavigateUp())
             onBackPressed()

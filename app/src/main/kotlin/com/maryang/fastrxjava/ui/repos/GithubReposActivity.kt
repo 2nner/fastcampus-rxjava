@@ -21,6 +21,7 @@ class GithubReposActivity : BaseActivity() {
     private val viewModel: GithubReposViewModel by lazy {
         GithubReposViewModel()
     }
+
     private val adapter: GithubReposAdapter by lazy {
         GithubReposAdapter()
     }
@@ -93,7 +94,4 @@ class GithubReposActivity : BaseActivity() {
         refreshLayout.isRefreshing = false
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
 }

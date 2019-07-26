@@ -2,6 +2,7 @@ package com.maryang.fastrxjava.ui.repo
 
 import android.content.Context
 import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.maryang.fastrxjava.R
 import com.maryang.fastrxjava.base.BaseActivity
@@ -9,6 +10,7 @@ import com.maryang.fastrxjava.entity.GithubRepo
 import com.maryang.fastrxjava.event.DataObserver
 import com.maryang.fastrxjava.ui.user.UserActivity
 import io.reactivex.observers.DisposableCompletableObserver
+import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_github_repo.*
 import org.jetbrains.anko.imageResource
@@ -33,6 +35,11 @@ class GithubRepoActivity : BaseActivity() {
     private val viewModel: GithubRepoViewModel by lazy {
         GithubRepoViewModel()
     }
+
+    private val adapter: GithubRepoAdapter by lazy {
+        GithubRepoAdapter()
+    }
+
     private lateinit var repo: GithubRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +54,25 @@ class GithubRepoActivity : BaseActivity() {
             showRepo(it)
             setOnClickListener()
         }
+
+        /*with(rv_otherRepos) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = adapter
+        }*/
+        rv_otherRepos.adapter = adapter
+        rv_otherRepos.layoutManager = LinearLayoutManager(this)
+
+        viewModel.searchGithubOtherRepoObservable(repo.owner.userName)
+            .subscribe(object: DisposableSingleObserver<List<GithubRepo>>(){
+                override fun onSuccess(t: List<GithubRepo>) {
+                    // Log.d(BaseApplication.TAG, "onSuccess()")
+                    adapter.items = t.filter { it.name != repo.name }
+                }
+
+                override fun onError(e: Throwable) {
+                    // Log.d(BaseApplication.TAG, e.printStackTrace().toString())
+                }
+            })
     }
 
     private fun showRepo(repo: GithubRepo) {

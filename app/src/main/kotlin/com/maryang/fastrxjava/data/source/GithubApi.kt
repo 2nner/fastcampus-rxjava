@@ -29,4 +29,9 @@ interface GithubApi {
         @Path("owner") owner: String,
         @Path("repo") repo: String
     ): Completable
+
+    @GET("users/{username}/repos")
+    fun searchOtherRepos(
+        @Path("username") username: String
+    ): Single<JsonElement>
 }

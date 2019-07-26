@@ -36,8 +36,8 @@ class GithubReposViewModel {
                     Completable.merge(
                         it.map { repo ->
                             repository.checkStar(repo.owner.userName, repo.name)
-                                .doOnComplete { repo.star = true }
-                                .onErrorComplete()
+                                .doOnComplete { repo.star = true } // 204일 경우
+                                .onErrorComplete() // 404일 경우 아무 행동도 하지 않음
                         }
                     ).subscribe {
                         emitter.onSuccess(it)
